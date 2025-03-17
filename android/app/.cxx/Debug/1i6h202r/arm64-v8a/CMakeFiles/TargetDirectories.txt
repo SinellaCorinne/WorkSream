@@ -1,0 +1,2 @@
+C:/Users/sinella/StudioProjects/Management/android/app/.cxx/Debug/1i6h202r/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/sinella/StudioProjects/Management/android/app/.cxx/Debug/1i6h202r/arm64-v8a/CMakeFiles/rebuild_cache.dir
