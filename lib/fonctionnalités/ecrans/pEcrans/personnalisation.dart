@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../theme/style.dart';
-import 'notif.dart' show _SectionTitle, _SettingsCard, _Divider;
+import 'settings_widgets.dart';
 
 class PersonnaliserPage extends StatefulWidget {
   const PersonnaliserPage({super.key});
@@ -33,9 +33,8 @@ class _PersonnaliserPageState extends State<PersonnaliserPage> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          // ── Apparence ─────────────────────────────────────────────────
-          _SectionTitle('Apparence'),
-          _SettingsCard(children: [
+          SettingsSectionTitle('Apparence'),
+          SettingsCard(children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               child: Row(
@@ -78,8 +77,7 @@ class _PersonnaliserPageState extends State<PersonnaliserPage> {
             ),
           ]),
 
-          // ── Couleur d'accentuation ────────────────────────────────────
-          _SectionTitle('Couleur d\'accentuation'),
+          SettingsSectionTitle('Couleur d\'accentuation'),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -101,9 +99,7 @@ class _PersonnaliserPageState extends State<PersonnaliserPage> {
                       color: _themeColors[i],
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: selected
-                            ? KColors.dark
-                            : Colors.transparent,
+                        color: selected ? KColors.dark : Colors.transparent,
                         width: 3,
                       ),
                       boxShadow: selected
@@ -117,8 +113,7 @@ class _PersonnaliserPageState extends State<PersonnaliserPage> {
                           : [],
                     ),
                     child: selected
-                        ? const Icon(Icons.check,
-                            color: Colors.white, size: 18)
+                        ? const Icon(Icons.check, color: Colors.white, size: 18)
                         : null,
                   ),
                 );
@@ -126,9 +121,8 @@ class _PersonnaliserPageState extends State<PersonnaliserPage> {
             ),
           ),
 
-          // ── Langue ────────────────────────────────────────────────────
-          _SectionTitle('Langue'),
-          _SettingsCard(children: [
+          SettingsSectionTitle('Langue'),
+          SettingsCard(children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               child: Row(
@@ -171,8 +165,7 @@ class _PersonnaliserPageState extends State<PersonnaliserPage> {
             ),
           ]),
 
-          // ── Taille du texte ───────────────────────────────────────────
-          _SectionTitle('Taille du texte'),
+          SettingsSectionTitle('Taille du texte'),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -222,7 +215,6 @@ class _PersonnaliserPageState extends State<PersonnaliserPage> {
               ],
             ),
           ),
-
           const SizedBox(height: 32),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../theme/style.dart';
+import '../widgets/auth_widgets.dart';
 import 'inscrire/telephone.dart';
 
 class Inscriptionpage extends StatefulWidget {
@@ -42,7 +43,6 @@ class _InscriptionpageState extends State<Inscriptionpage>
       backgroundColor: KColors.dark,
       body: Stack(
         children: [
-          // Décoration
           Positioned(
             top: -100,
             right: -80,
@@ -67,7 +67,6 @@ class _InscriptionpageState extends State<Inscriptionpage>
               ),
             ),
           ),
-
           SafeArea(
             child: FadeTransition(
               opacity: _fadeAnim,
@@ -79,8 +78,6 @@ class _InscriptionpageState extends State<Inscriptionpage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 16),
-
-                      // Back
                       GestureDetector(
                         onTap: () => Get.back(),
                         child: Container(
@@ -94,15 +91,9 @@ class _InscriptionpageState extends State<Inscriptionpage>
                               color: Colors.white, size: 20),
                         ),
                       ),
-
                       const SizedBox(height: 36),
-
-                      // Indicateur étapes
-                      _StepIndicator(current: 0, total: 5),
-
+                      const AuthStepIndicator(current: 0, total: 5),
                       const SizedBox(height: 28),
-
-                      // Titre
                       const Text(
                         'Créer un\ncompte',
                         style: TextStyle(
@@ -123,10 +114,7 @@ class _InscriptionpageState extends State<Inscriptionpage>
                           color: Colors.white.withOpacity(0.55),
                         ),
                       ),
-
                       const SizedBox(height: 36),
-
-                      // Formulaire
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.07),
@@ -138,20 +126,15 @@ class _InscriptionpageState extends State<Inscriptionpage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _AuthLabel('Nom de famille'),
+                            const AuthLabel('Nom de famille'),
                             const SizedBox(height: 8),
-                            _DarkTextField(hint: 'Ex: Dupont', icon: Iconsax.user),
-
+                            AuthDarkTextField(hint: 'Ex: Dupont', icon: Iconsax.user),
                             const SizedBox(height: 20),
-
-                            _AuthLabel('Prénom(s)'),
+                            const AuthLabel('Prénom(s)'),
                             const SizedBox(height: 8),
-                            _DarkTextField(hint: 'Ex: Alice', icon: Iconsax.user),
-
+                            AuthDarkTextField(hint: 'Ex: Alice', icon: Iconsax.user),
                             const SizedBox(height: 28),
-
-                            // Continuer
-                            _GradientButton(
+                            AuthGradientButton(
                               label: 'Continuer',
                               onTap: () => Get.to(() => const Phone()),
                             ),
@@ -166,153 +149,6 @@ class _InscriptionpageState extends State<Inscriptionpage>
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ── Widgets réutilisables (partagés dans tout le flow inscription) ─────────────
-
-class _StepIndicator extends StatelessWidget {
-  final int current;
-  final int total;
-  const _StepIndicator({required this.current, required this.total});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(total, (i) {
-        final done = i < current;
-        final active = i == current;
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(right: i < total - 1 ? 6 : 0),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              height: 4,
-              decoration: BoxDecoration(
-                color: done
-                    ? KColors.secondary
-                    : active
-                        ? Colors.white
-                        : Colors.white.withOpacity(0.20),
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-        );
-      }),
-    );
-  }
-}
-
-class _AuthLabel extends StatelessWidget {
-  final String text;
-  const _AuthLabel(this.text);
-
-  @override
-  Widget build(BuildContext context) => Text(
-        text,
-        style: const TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
-      );
-}
-
-class _DarkTextField extends StatelessWidget {
-  final String hint;
-  final IconData icon;
-  final bool obscure;
-  final TextInputType? keyboardType;
-
-  const _DarkTextField({
-    required this.hint,
-    required this.icon,
-    this.obscure = false,
-    this.keyboardType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      obscureText: obscure,
-      keyboardType: keyboardType,
-      style: const TextStyle(
-        fontFamily: 'Poppins',
-        color: Colors.white,
-        fontSize: 14,
-      ),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(
-          fontFamily: 'Poppins',
-          color: Colors.white.withOpacity(0.35),
-          fontSize: 14,
-        ),
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.08),
-        prefixIcon:
-            Icon(icon, color: Colors.white.withOpacity(0.50), size: 20),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: Colors.white.withOpacity(0.12), width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: Colors.white.withOpacity(0.12), width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide:
-              const BorderSide(color: KColors.secondary, width: 1.5),
-        ),
-      ),
-    );
-  }
-}
-
-class _GradientButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  const _GradientButton({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        height: 52,
-        decoration: BoxDecoration(
-          gradient: KGradients.primaryGradient,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: KShadows.primary,
-        ),
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w700,
-                fontSize: 15,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 8),
-            const Icon(Iconsax.arrow_right_3,
-                color: Colors.white, size: 18),
-          ],
-        ),
       ),
     );
   }

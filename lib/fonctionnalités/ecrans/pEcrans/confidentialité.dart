@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../theme/style.dart';
-import 'notif.dart' show _SectionTitle, _SettingsCard, _Divider, _SwitchRow;
+import 'settings_widgets.dart';
 
 class ConfidentialitePage extends StatefulWidget {
   const ConfidentialitePage({super.key});
@@ -23,21 +23,19 @@ class _ConfidentialitePageState extends State<ConfidentialitePage> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          // Info banner
           Container(
             padding: const EdgeInsets.all(16),
             margin: const EdgeInsets.only(bottom: 4),
             decoration: BoxDecoration(
               color: KColors.info.withOpacity(0.08),
               borderRadius: BorderRadius.circular(16),
-              border:
-                  Border.all(color: KColors.info.withOpacity(0.20), width: 1),
+              border: Border.all(
+                  color: KColors.info.withOpacity(0.20), width: 1),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Iconsax.shield_tick,
-                    color: KColors.info, size: 20),
+                const Icon(Iconsax.shield_tick, color: KColors.info, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -54,9 +52,9 @@ class _ConfidentialitePageState extends State<ConfidentialitePage> {
             ),
           ),
 
-          _SectionTitle('Paramètres de confidentialité'),
-          _SettingsCard(children: [
-            _SwitchRow(
+          SettingsSectionTitle('Paramètres de confidentialité'),
+          SettingsCard(children: [
+            SettingsSwitchRow(
               icon: Iconsax.location,
               color: KColors.success,
               title: 'Partage de localisation',
@@ -64,8 +62,8 @@ class _ConfidentialitePageState extends State<ConfidentialitePage> {
               value: _location,
               onChanged: (v) => setState(() => _location = v),
             ),
-            const _Divider(),
-            _SwitchRow(
+            const SettingsDivider(),
+            SettingsSwitchRow(
               icon: Iconsax.chart,
               color: KColors.primary,
               title: 'Données analytiques',
@@ -73,8 +71,8 @@ class _ConfidentialitePageState extends State<ConfidentialitePage> {
               value: _analytics,
               onChanged: (v) => setState(() => _analytics = v),
             ),
-            const _Divider(),
-            _SwitchRow(
+            const SettingsDivider(),
+            SettingsSwitchRow(
               icon: Iconsax.tag,
               color: KColors.warning,
               title: 'Publicités ciblées',
@@ -84,75 +82,71 @@ class _ConfidentialitePageState extends State<ConfidentialitePage> {
             ),
           ]),
 
-          _SectionTitle('Actions sur les données'),
-          _SettingsCard(children: [
+          SettingsSectionTitle('Actions sur les données'),
+          SettingsCard(children: [
             _ActionTile(
               icon: Iconsax.document_download,
               color: KColors.secondary,
               title: 'Télécharger mes données',
               subtitle: 'Exporter toutes vos informations',
-              onTap: () => _showSnack(context, 'Téléchargement en cours…'),
+              onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Téléchargement en cours…',
+                      style: TextStyle(fontFamily: 'Poppins', fontSize: 13)),
+                  backgroundColor: KColors.primary,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
             ),
-            const _Divider(),
+            const SettingsDivider(),
             _ActionTile(
               icon: Iconsax.trash,
               color: KColors.error,
               title: 'Supprimer mon compte',
               subtitle: 'Action irréversible',
-              onTap: () => _showDeleteDialog(context),
               isDestructive: true,
+              onTap: () => showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  title: const Text('Supprimer le compte',
+                      style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w700,
+                          color: KColors.dark)),
+                  content: const Text(
+                    'Cette action est irréversible. Toutes vos données seront définitivement supprimées.',
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
+                        color: KColors.grey),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Annuler',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: KColors.grey,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Supprimer',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: KColors.error,
+                              fontWeight: FontWeight.w700)),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ]),
           const SizedBox(height: 32),
-        ],
-      ),
-    );
-  }
-
-  void _showSnack(BuildContext context, String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg,
-            style: const TextStyle(fontFamily: 'Poppins', fontSize: 13)),
-        backgroundColor: KColors.primary,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    );
-  }
-
-  void _showDeleteDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Supprimer le compte',
-            style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w700,
-                color: KColors.dark)),
-        content: const Text(
-          'Cette action est irréversible. Toutes vos données seront définitivement supprimées.',
-          style: TextStyle(
-              fontFamily: 'Poppins', fontSize: 13, color: KColors.grey),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler',
-                style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: KColors.grey,
-                    fontWeight: FontWeight.w600)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Supprimer',
-                style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: KColors.error,
-                    fontWeight: FontWeight.w700)),
-          ),
         ],
       ),
     );
@@ -203,8 +197,7 @@ class _ActionTile extends StatelessWidget {
                             fontFamily: 'Poppins',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color:
-                                isDestructive ? KColors.error : KColors.dark)),
+                            color: isDestructive ? KColors.error : KColors.dark)),
                     Text(subtitle,
                         style: const TextStyle(
                             fontFamily: 'Poppins',
@@ -214,7 +207,8 @@ class _ActionTile extends StatelessWidget {
                 ),
               ),
               Icon(Iconsax.arrow_right_3,
-                  size: 16, color: isDestructive ? KColors.error : KColors.grey),
+                  size: 16,
+                  color: isDestructive ? KColors.error : KColors.grey),
             ],
           ),
         ),

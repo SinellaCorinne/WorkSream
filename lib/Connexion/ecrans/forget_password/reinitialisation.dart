@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../theme/style.dart';
-import '../inscrire/telephone.dart' show _AuthStepScaffold, _DarkTextField, _GradientButton;
+import '../../widgets/auth_widgets.dart';
 import 'verification.dart';
 
 class Reinitialisation extends StatelessWidget {
@@ -10,7 +10,7 @@ class Reinitialisation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _AuthStepScaffold(
+    return AuthStepScaffold(
       stepIndex: 0,
       title: 'Mot de\npasse oublié ?',
       subtitle: 'Réinitialisation — Renseignez votre identifiant',
@@ -27,14 +27,14 @@ class Reinitialisation extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          const _AuthLabel('E-mail ou téléphone'),
+          const AuthLabel('E-mail ou téléphone'),
           const SizedBox(height: 8),
-          _DarkTextField(
+          AuthDarkTextField(
             hint: 'votre@email.com ou +221 77…',
             icon: Iconsax.user,
           ),
           const SizedBox(height: 28),
-          _GradientButton(
+          AuthGradientButton(
             label: 'Envoyer le code',
             onTap: () => Get.to(() => const Verification()),
           ),
@@ -42,19 +42,4 @@ class Reinitialisation extends StatelessWidget {
       ),
     );
   }
-}
-
-class _AuthLabel extends StatelessWidget {
-  final String text;
-  const _AuthLabel(this.text);
-  @override
-  Widget build(BuildContext context) => Text(
-        text,
-        style: const TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
-      );
 }

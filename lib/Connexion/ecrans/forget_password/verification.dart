@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../theme/style.dart';
-import '../inscrire/telephone.dart' show _AuthStepScaffold, _GradientButton;
-import '../inscrire/telephone_verif.dart' show _OtpBox;
+import '../../widgets/auth_widgets.dart';
 import 'confirmation.dart';
 
 class Verification extends StatefulWidget {
@@ -26,7 +25,7 @@ class _VerificationState extends State<Verification> {
 
   @override
   Widget build(BuildContext context) {
-    return _AuthStepScaffold(
+    return AuthStepScaffold(
       stepIndex: 1,
       title: 'Vérification\ndu code',
       subtitle: 'Réinitialisation — Entrez le code reçu',
@@ -47,7 +46,7 @@ class _VerificationState extends State<Verification> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(
               4,
-              (i) => _OtpBox(
+              (i) => AuthOtpBox(
                 controller: _ctrls[i],
                 focusNode: _nodes[i],
                 onChanged: (v) {
@@ -61,30 +60,9 @@ class _VerificationState extends State<Verification> {
             ),
           ),
           const SizedBox(height: 20),
-          Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: RichText(
-                text: TextSpan(
-                  style: const TextStyle(fontFamily: 'Poppins', fontSize: 13),
-                  children: [
-                    TextSpan(
-                      text: 'Pas reçu le code ? ',
-                      style: TextStyle(color: Colors.white.withOpacity(0.55)),
-                    ),
-                    const TextSpan(
-                      text: 'Renvoyer',
-                      style: TextStyle(
-                          color: KColors.secondary,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          const AuthResendRow(),
           const SizedBox(height: 28),
-          _GradientButton(
+          AuthGradientButton(
             label: 'Vérifier',
             onTap: () => Get.to(() => const Confirmation()),
           ),
