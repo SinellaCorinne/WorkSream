@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:management/Connexion/ecrans/inscrire/password_define.dart';
-
-import '../../../commons/K_Input.dart';
-import '../../../commons/kelevated_button.dart';
-import '../../../commons/logo.dart';
 import '../../../theme/style.dart';
-import 'insc_item.dart';
- // Assurez-vous que le chemin est correct
+import 'telephone.dart' show _AuthStepScaffold, _GradientButton;
+import 'telephone_verif.dart' show _OtpBox;
+import 'password_define.dart';
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({super.key});
@@ -18,86 +13,80 @@ class EmailVerification extends StatefulWidget {
 }
 
 class _EmailVerificationState extends State<EmailVerification> {
-  PageController controller = PageController();
-  int selected = 0;
+  final List<TextEditingController> _ctrls =
+      List.generate(4, (_) => TextEditingController());
+  final List<FocusNode> _nodes = List.generate(4, (_) => FocusNode());
+
+  @override
+  void dispose() {
+    for (final c in _ctrls) c.dispose();
+    for (final n in _nodes) n.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      extendBody: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-          ),
-        ],
-      ),
-      body: Stack(
+    return _AuthStepScaffold(
+      stepIndex: 3,
+      title: 'Code\ne-mail',
+      subtitle: 'Étape 4 sur 5 — Code reçu par e-mail',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image de fond ou décoration
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [KColors.primary, KColors.secondary],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+          Text(
+            'Entrez le code à 4 chiffres envoyé à\nvotre@email.com',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              color: Colors.white.withOpacity(0.65),
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 28),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(
+              4,
+              (i) => _OtpBox(
+                controller: _ctrls[i],
+                focusNode: _nodes[i],
+                onChanged: (v) {
+                  if (v.length == 1 && i < 3) {
+                    _nodes[i + 1].requestFocus();
+                  } else if (v.isEmpty && i > 0) {
+                    _nodes[i - 1].requestFocus();
+                  }
+                },
               ),
             ),
           ),
+          const SizedBox(height: 20),
           Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            child: GestureDetector(
+              onTap: () {},
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(fontFamily: 'Poppins', fontSize: 13),
                   children: [
-                    // Logo
-                    const Logo(
-                      size: 120.0, // Ajustez la taille selon vos besoins
-                      backgroundColor: Colors.white,
-                      borderColor: KColors.primary,
-                      borderWidth: 3.0,
+                    TextSpan(
+                      text: 'Pas reçu le code ? ',
+                      style: TextStyle(color: Colors.white.withOpacity(0.55)),
                     ),
-                    SizedBox(height: 40),
-                    // Titre
-                    Text(
-                      "Vérification du code",
-                      style: KTypography.h4(context, color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    // Champs de saisie
-                    Row(
-                      children: [
-                        Expanded(child: KInput(name: "")),
-                        SizedBox(width: 5),
-                        Expanded(child: KInput(name: "")),
-                        SizedBox(width: 5),
-                        Expanded(child: KInput(name: "")),
-                        SizedBox(width: 5),
-                        Expanded(child: KInput(name: "")),
-                      ],
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      "Renvoyer à nouveau",
-                      style: KTypography.h5(context, color: KColors.tertiary),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    // Bouton de continuation
-                    KElevatedButton(
-                      child: const Text("Continuer"),
-                      onPressed: () => Get.to(PasswordDefine()),
-
+                    const TextSpan(
+                      text: 'Renvoyer',
+                      style: TextStyle(
+                          color: KColors.secondary,
+                          fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 28),
+          _GradientButton(
+            label: 'Vérifier',
+            onTap: () => Get.to(() => const PasswordDefine()),
           ),
         ],
       ),

@@ -1,40 +1,46 @@
 import 'package:flutter/material.dart';
-import '../theme/style.dart'; // Assurez-vous que le chemin est correct
-import '../theme/police.dart'; // Assurez-vous que le chemin est correct
+import '../theme/style.dart';
 
 class KElevatedButton extends StatelessWidget {
   final Widget child;
   final VoidCallback onPressed;
-  final Color backgroundColor; // Couleur de fond du conteneur
-  final Color borderColor;
-  final Color foregroundColor;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final Color? borderColor;
 
-  KElevatedButton({
+  const KElevatedButton({
     super.key,
     required this.child,
     required this.onPressed,
-
-    this.backgroundColor = KColors.primary, // Utilisez la couleur primaire par défaut
-    this.borderColor = KColors.primary, // Utilisez la couleur primaire par défaut
-    this.foregroundColor = Colors.white, // Valeur par défaut pour la couleur du texte
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      child: child,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: foregroundColor,
-        backgroundColor: backgroundColor,
-        elevation: 2,
-        side: BorderSide(color: borderColor, width: 1),
-        textStyle: KTypography.h6(context, color: foregroundColor), // Utilisez le style de texte défini
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor ?? KColors.primary,
+          foregroundColor: foregroundColor ?? Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: borderColor != null
+                ? BorderSide(color: borderColor!, width: 1.5)
+                : BorderSide.none,
+          ),
+          textStyle: const TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+          ),
         ),
-        minimumSize: Size(250, 40), // Taille minimale du bouton
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16), // Padding
+        child: child,
       ),
     );
   }

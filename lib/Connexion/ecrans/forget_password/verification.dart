@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:management/Connexion/ecrans/forget_password/confirmation.dart';
-
-import '../../../commons/K_Input.dart';
-import '../../../commons/kelevated_button.dart';
-import '../../../commons/logo.dart';
 import '../../../theme/style.dart';
-import '../../../theme/police.dart';
+import '../inscrire/telephone.dart' show _AuthStepScaffold, _GradientButton;
+import '../inscrire/telephone_verif.dart' show _OtpBox;
+import 'confirmation.dart';
 
 class Verification extends StatefulWidget {
   const Verification({super.key});
@@ -17,80 +13,80 @@ class Verification extends StatefulWidget {
 }
 
 class _VerificationState extends State<Verification> {
+  final List<TextEditingController> _ctrls =
+      List.generate(4, (_) => TextEditingController());
+  final List<FocusNode> _nodes = List.generate(4, (_) => FocusNode());
+
+  @override
+  void dispose() {
+    for (final c in _ctrls) c.dispose();
+    for (final n in _nodes) n.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      extendBody: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: Stack(
+    return _AuthStepScaffold(
+      stepIndex: 1,
+      title: 'Vérification\ndu code',
+      subtitle: 'Réinitialisation — Entrez le code reçu',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Fond avec gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [KColors.primary, KColors.secondary],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+          Text(
+            'Un code de vérification vous a été envoyé.\nVérifiez votre e-mail ou WhatsApp.',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              color: Colors.white.withOpacity(0.65),
+              height: 1.6,
+            ),
+          ),
+          const SizedBox(height: 28),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(
+              4,
+              (i) => _OtpBox(
+                controller: _ctrls[i],
+                focusNode: _nodes[i],
+                onChanged: (v) {
+                  if (v.length == 1 && i < 3) {
+                    _nodes[i + 1].requestFocus();
+                  } else if (v.isEmpty && i > 0) {
+                    _nodes[i - 1].requestFocus();
+                  }
+                },
               ),
             ),
           ),
+          const SizedBox(height: 20),
           Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            child: GestureDetector(
+              onTap: () {},
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(fontFamily: 'Poppins', fontSize: 13),
                   children: [
-                    // Logo
-                    Logo(
-                      size: 120.0,
-                      backgroundColor: Colors.white.withOpacity(0.2),
-                      borderColor: KColors.primary,
-                      borderWidth: 3.0,
+                    TextSpan(
+                      text: 'Pas reçu le code ? ',
+                      style: TextStyle(color: Colors.white.withOpacity(0.55)),
                     ),
-                    SizedBox(height: 40),
-                    // Titre
-                    Text(
-                      "Vérification du code",
-                      style: KTypography.h4(context, color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    // Champs de saisie
-                    Row(
-                      children: [
-                        Expanded(child: KInput(name: "")),
-                        SizedBox(width: 5),
-                        Expanded(child: KInput(name: "")),
-                        SizedBox(width: 5),
-                        Expanded(child: KInput(name: "")),
-                        SizedBox(width: 5),
-                        Expanded(child: KInput(name: "")),
-                      ],
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      "Renvoyer à nouveau",
-                      style: KTypography.h5(context, color: KColors.primary),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    // Bouton de continuation
-                    KElevatedButton(
-                      child: Text("Continuer"),
-                      onPressed: () => Get.to(Confirmation()),
-                      backgroundColor: KColors.primary,
-                      borderColor: KColors.primary,
-                      foregroundColor: Colors.white,
+                    const TextSpan(
+                      text: 'Renvoyer',
+                      style: TextStyle(
+                          color: KColors.secondary,
+                          fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 28),
+          _GradientButton(
+            label: 'Vérifier',
+            onTap: () => Get.to(() => const Confirmation()),
           ),
         ],
       ),

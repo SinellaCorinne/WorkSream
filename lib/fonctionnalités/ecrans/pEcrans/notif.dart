@@ -1,169 +1,203 @@
 import 'package:flutter/material.dart';
-
+import 'package:iconsax/iconsax.dart';
 import '../../../theme/style.dart';
 
-
 class NotificationsPage extends StatefulWidget {
+  const NotificationsPage({super.key});
+
   @override
-  _NotificationsPageState createState() => _NotificationsPageState();
+  State<NotificationsPage> createState() => _NotificationsPageState();
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  bool enableAll = true;
-  bool enableMessages = true;
-  bool enableRappels = true;
-  bool enableMises = true;
-  bool enableSon = true;
+  bool _allEnabled = true;
+  bool _sound = true;
+  bool _messages = true;
+  bool _reminders = true;
+  bool _updates = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Notifications', style: KTypography.h4(context)),
-        backgroundColor: KColors.primary,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Paramètres généraux
-            Text(
-              'Paramètres généraux',
-              style: KTypography.h5(context, color: KColors.secondary),
+      backgroundColor: KColors.greyLight,
+      appBar: AppBar(title: const Text('Notifications')),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          _SectionTitle('Paramètres généraux'),
+          _SettingsCard(children: [
+            _SwitchRow(
+              icon: Iconsax.notification,
+              color: KColors.primary,
+              title: 'Activer les notifications',
+              subtitle: 'Contrôle général de toutes les alertes',
+              value: _allEnabled,
+              onChanged: (v) => setState(() {
+                _allEnabled = v;
+                if (!v) {
+                  _sound = _messages = _reminders = _updates = false;
+                }
+              }),
             ),
-            SizedBox(height: 10),
-
-            _buildSwitchTile(
-              'Activer toutes les notifications',
-              enableAll,
-                  (value) {
-                setState(() {
-                  enableAll = value;
-                  if (!value) {
-                    enableMessages = false;
-                    enableRappels = false;
-                    enableMises = false;
-                  }
-                });
-              },
+            const _Divider(),
+            _SwitchRow(
+              icon: Iconsax.volume_high,
+              color: KColors.warning,
+              title: 'Sons',
+              subtitle: 'Jouer un son pour les alertes',
+              value: _sound && _allEnabled,
+              enabled: _allEnabled,
+              onChanged: (v) => setState(() => _sound = v),
             ),
+          ]),
 
-            SizedBox(height: 5),
-            _buildSwitchTile(
-              'Son des notifications',
-              enableSon,
-                  (value) {
-                setState(() {
-                  enableSon = value;
-                });
-              },
+          _SectionTitle('Types de notifications'),
+          _SettingsCard(children: [
+            _SwitchRow(
+              icon: Iconsax.message,
+              color: KColors.secondary,
+              title: 'Messages',
+              subtitle: 'Nouveaux messages et mentions',
+              value: _messages && _allEnabled,
+              enabled: _allEnabled,
+              onChanged: (v) => setState(() => _messages = v),
             ),
-
-            SizedBox(height: 20),
-            // Types de notifications
-            Text(
-              'Types de notifications',
-              style: KTypography.h5(context, color: KColors.secondary),
+            const _Divider(),
+            _SwitchRow(
+              icon: Iconsax.timer_1,
+              color: KColors.accent,
+              title: 'Rappels',
+              subtitle: 'Rappels de tâches et d\'échéances',
+              value: _reminders && _allEnabled,
+              enabled: _allEnabled,
+              onChanged: (v) => setState(() => _reminders = v),
             ),
-            SizedBox(height: 10),
-
-            _buildSwitchTile(
-              'Messages',
-              enableMessages,
-                  (value) {
-                setState(() {
-                  enableMessages = value;
-                  _updateMasterSwitch();
-                });
-              },
-              enabled: enableAll,
+            const _Divider(),
+            _SwitchRow(
+              icon: Iconsax.refresh,
+              color: KColors.info,
+              title: 'Mises à jour',
+              subtitle: 'Nouvelles fonctionnalités et correctifs',
+              value: _updates && _allEnabled,
+              enabled: _allEnabled,
+              onChanged: (v) => setState(() => _updates = v),
             ),
-
-            SizedBox(height: 5),
-            _buildSwitchTile(
-              'Rappels',
-              enableRappels,
-                  (value) {
-                setState(() {
-                  enableRappels = value;
-                  _updateMasterSwitch();
-                });
-              },
-              enabled: enableAll,
-            ),
-
-            SizedBox(height: 5),
-            _buildSwitchTile(
-              'Mises à jour',
-              enableMises,
-                  (value) {
-                setState(() {
-                  enableMises = value;
-                  _updateMasterSwitch();
-                });
-              },
-              enabled: enableAll,
-            ),
-
-            SizedBox(height: 30),
-            Center(
-              child: TextButton(
-                onPressed: () {
-                  // Logique pour effacer l'historique des notifications
-                },
-                child: Text(
-                  'Effacer l\'historique des notifications',
-                  style: TextStyle(
-                    color: KColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _updateMasterSwitch() {
-    if (enableMessages && enableRappels && enableMises) {
-      setState(() {
-        enableAll = true;
-      });
-    }
-  }
-
-  Widget _buildSwitchTile(String title, bool value, Function(bool) onChanged, {bool enabled = true}) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8.0),
-      decoration: BoxDecoration(
-        color: enabled ? Colors.white : Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: KColors.primary.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
+          ]),
         ],
       ),
-      child: SwitchListTile(
-        title: Text(
-          title,
-          style: KTypography.h5(context).copyWith(
-            color: enabled ? null : Colors.grey,
-          ),
-        ),
-        value: enabled ? value : false,
-        onChanged: enabled ? onChanged : null,
-        activeColor: KColors.secondary,
-      ),
     );
   }
+}
+
+// ── Widgets ───────────────────────────────────────────────────────────────────
+
+class _SectionTitle extends StatelessWidget {
+  final String text;
+  const _SectionTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 10, top: 20),
+        child: Text(
+          text.toUpperCase(),
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: KColors.grey,
+            letterSpacing: 1.2,
+          ),
+        ),
+      );
+}
+
+class _SettingsCard extends StatelessWidget {
+  final List<Widget> children;
+  const _SettingsCard({required this.children});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: KShadows.soft,
+        ),
+        child: Column(children: children),
+      );
+}
+
+class _Divider extends StatelessWidget {
+  const _Divider();
+  @override
+  Widget build(BuildContext context) => const Divider(
+        height: 1,
+        indent: 56,
+        endIndent: 16,
+        color: Color(0xFFEFF2F7),
+      );
+}
+
+class _SwitchRow extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final bool value;
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  const _SwitchRow({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    this.enabled = true,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) => Opacity(
+        opacity: enabled ? 1.0 : 0.45,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 20, color: color),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: KColors.dark)),
+                    Text(subtitle,
+                        style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 11,
+                            color: KColors.grey)),
+                  ],
+                ),
+              ),
+              Switch.adaptive(
+                value: value,
+                onChanged: enabled ? onChanged : null,
+                activeColor: KColors.primary,
+              ),
+            ],
+          ),
+        ),
+      );
 }

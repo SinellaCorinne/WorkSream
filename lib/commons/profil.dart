@@ -1,117 +1,67 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:iconsax/iconsax.dart';
+import '../theme/style.dart';
 
-class Profil extends StatefulWidget {
-  final String profileImage;
+class Profil extends StatelessWidget {
   final String name;
+  final String imagePath;
 
   const Profil({
-    Key? key,
-    this.profileImage = 'assets/images/Profil.jpg',
+    super.key,
     this.name = 'Sinella Dk',
-  }) : super(key: key);
-
-  @override
-  _ProfilState createState() => _ProfilState();
-}
-
-class _ProfilState extends State<Profil> {
-  File? _selectedImage;
-  late TextEditingController _nameController;
-  bool _isEditing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController(text: widget.name);
-  }
-
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1800,
-      maxHeight: 1800,
-    );
-
-    if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
-    }
-  }
-
-  void _toggleEditMode() {
-    setState(() {
-      _isEditing = !_isEditing;
-      if (!_isEditing) {
-        // Sauvegarder le nom modifié
-        // Vous pouvez ajouter ici une logique pour sauvegarder le nom
-      }
-    });
-  }
+    this.imagePath = 'assets/images/Profil.jpg',
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: _pickImage,
-            child: CircleAvatar(
-              radius: 40,
-              backgroundImage: _selectedImage != null
-                  ? FileImage(_selectedImage!)
-                  : AssetImage(widget.profileImage) as ImageProvider,
+    return Row(
+      children: [
+        Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            CircleAvatar(
+              radius: 32,
+              backgroundImage: AssetImage(imagePath),
+              backgroundColor: KColors.primary.withOpacity(0.10),
+              onBackgroundImageError: (_, __) {},
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _isEditing
-                ? TextField(
-              controller: _nameController,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+            Container(
+              width: 22,
+              height: 22,
+              decoration: const BoxDecoration(
+                color: KColors.secondary,
+                shape: BoxShape.circle,
               ),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.check),
-                  onPressed: _toggleEditMode,
-                ),
-              ),
-            )
-                : Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _nameController.text,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: _toggleEditMode,
-                ),
-              ],
+              child: const Icon(Iconsax.edit, size: 12, color: Colors.white),
             ),
+          ],
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: KColors.dark,
+                ),
+              ),
+              const Text(
+                'Administrateur',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 12,
+                  color: KColors.grey,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
   }
 }

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:management/Connexion/ecrans/inscrire/insc_item.dart';
-
-import '../../../commons/K_Input.dart';
-import '../../../commons/kelevated_button.dart';
-import '../../../commons/logo.dart';
 import '../../../theme/style.dart';
+import 'telephone.dart' show _AuthStepScaffold, _GradientButton;
 import 'email.dart';
- // Assurez-vous que le chemin est correct
 
 class PhoneVerification extends StatefulWidget {
   const PhoneVerification({super.key});
@@ -18,88 +14,141 @@ class PhoneVerification extends StatefulWidget {
 }
 
 class _PhoneVerificationState extends State<PhoneVerification> {
-  PageController controller = PageController();
-  int selected = 0;
+  final List<TextEditingController> _ctrls =
+      List.generate(4, (_) => TextEditingController());
+  final List<FocusNode> _nodes = List.generate(4, (_) => FocusNode());
+
+  @override
+  void dispose() {
+    for (final c in _ctrls) c.dispose();
+    for (final n in _nodes) n.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      extendBody: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-          ),
-        ],
-      ),
-      body: Stack(
+    return _AuthStepScaffold(
+      stepIndex: 2,
+      title: 'Code de\nvérification',
+      subtitle: 'Étape 3 sur 5 — Code reçu par WhatsApp/SMS',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image de fond ou décoration
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [KColors.primary, KColors.secondary],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+          Text(
+            'Entrez le code à 4 chiffres envoyé au\n+221 77 *** **00',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              color: Colors.white.withOpacity(0.65),
+              height: 1.5,
             ),
           ),
-          Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Logo
-                    Logo(
-                      size: 120.0, // Ajustez la taille selon vos besoins
-                      backgroundColor: Colors.white.withOpacity(0.2),
-                      borderColor: KColors.primary,
-                      borderWidth: 3.0,
-                    ),
-                    SizedBox(height: 40),
-                    // Titre
-                    Text(
-                      "Vérification du code",
-                      style: KTypography.h4(context, color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    // Champs de saisie
-                    Row(
-                      children: [
-                        Expanded(child: KInput(name: "")),
-                        SizedBox(width: 5),
-                        Expanded(child: KInput(name: "")),
-                        SizedBox(width: 5),
-                        Expanded(child: KInput(name: "")),
-                        SizedBox(width: 5),
-                        Expanded(child: KInput(name: "")),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Renvoyer à nouveau",
-                      style: KTypography.h5(context, color: KColors.tertiary),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    // Bouton de continuation
-                    KElevatedButton(
-                      child: Text("Continuer"),
-                      onPressed: () => Get.to(Email()),
+          const SizedBox(height: 28),
 
+          // OTP inputs
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(4, (i) => _OtpBox(
+              controller: _ctrls[i],
+              focusNode: _nodes[i],
+              onChanged: (v) {
+                if (v.length == 1 && i < 3) {
+                  _nodes[i + 1].requestFocus();
+                } else if (v.isEmpty && i > 0) {
+                  _nodes[i - 1].requestFocus();
+                }
+              },
+            )),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Renvoyer
+          Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(fontFamily: 'Poppins', fontSize: 13),
+                  children: [
+                    TextSpan(
+                      text: 'Pas reçu le code ? ',
+                      style: TextStyle(color: Colors.white.withOpacity(0.55)),
+                    ),
+                    const TextSpan(
+                      text: 'Renvoyer',
+                      style: TextStyle(
+                          color: KColors.secondary,
+                          fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
               ),
             ),
           ),
+
+          const SizedBox(height: 28),
+          _GradientButton(
+            label: 'Vérifier',
+            onTap: () => Get.to(() => const Email()),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _OtpBox extends StatelessWidget {
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final ValueChanged<String> onChanged;
+
+  const _OtpBox({
+    required this.controller,
+    required this.focusNode,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 60,
+      height: 64,
+      child: TextField(
+        controller: controller,
+        focusNode: focusNode,
+        onChanged: onChanged,
+        textAlign: TextAlign.center,
+        keyboardType: TextInputType.number,
+        maxLength: 1,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        style: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+        ),
+        decoration: InputDecoration(
+          counterText: '',
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.10),
+          contentPadding: EdgeInsets.zero,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(
+                color: Colors.white.withOpacity(0.15), width: 1.5),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(
+                color: Colors.white.withOpacity(0.15), width: 1.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide:
+                const BorderSide(color: KColors.secondary, width: 2),
+          ),
+        ),
       ),
     );
   }

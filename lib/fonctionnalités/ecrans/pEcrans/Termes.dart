@@ -1,126 +1,139 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../theme/style.dart';
 
-
 class TermesConditionsPage extends StatelessWidget {
+  const TermesConditionsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: KColors.greyLight,
       appBar: AppBar(
-        title: Text('Termes et Conditions', style: KTypography.h4(context)),
-        backgroundColor: KColors.primary,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        title: const Text('Termes et Conditions'),
+        actions: [
+          TextButton.icon(
+            onPressed: () {},
+            icon: const Icon(Iconsax.document_download,
+                size: 16, color: KColors.primary),
+            label: const Text('PDF',
+                style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 13,
+                    color: KColors.primary,
+                    fontWeight: FontWeight.w600)),
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: KColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Dernière mise à jour: 12 mars 2025',
-                    style: TextStyle(
-                      color: KColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          // Header card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: KGradients.cardGradient,
+              borderRadius: BorderRadius.circular(18),
             ),
-
-            SizedBox(height: 20),
-            _buildSection(
-              context,
-              'Introduction',
-              'Bienvenue dans notre application. En utilisant notre service, vous acceptez de respecter les termes et conditions décrits dans ce document. Veuillez les lire attentivement avant d\'utiliser l\'application.',
-            ),
-
-            _buildSection(
-              context,
-              'Définitions',
-              '- "Application" désigne notre plateforme mobile et web.\n'
-                  '- "Utilisateur", "Vous" désigne toute personne qui accède ou utilise l\'application.\n'
-                  '- "Contenu" désigne toutes les informations et données accessibles ou générées via l\'application.',
-            ),
-
-            _buildSection(
-              context,
-              'Conditions d\'utilisation',
-              'En utilisant notre application, vous vous engagez à :\n\n'
-                  '1. Fournir des informations exactes lors de l\'inscription\n'
-                  '2. Maintenir la confidentialité de vos informations de connexion\n'
-                  '3. Ne pas utiliser l\'application à des fins illégales ou non autorisées\n'
-                  '4. Ne pas tenter de nuire au fonctionnement de l\'application',
-            ),
-
-            _buildSection(
-              context,
-              'Propriété intellectuelle',
-              'Tous les droits de propriété intellectuelle relatifs à l\'application et son contenu appartiennent à notre entreprise. Vous n\'êtes pas autorisé à reproduire, distribuer, modifier ou créer des œuvres dérivées sans notre autorisation explicite.',
-            ),
-
-            _buildSection(
-              context,
-              'Limitation de responsabilité',
-              'Dans toute la mesure permise par la loi applicable, nous ne sommes pas responsables des dommages directs, indirects, accessoires, consécutifs ou punitifs résultant de votre utilisation ou de votre incapacité à utiliser l\'application.',
-            ),
-
-            _buildSection(
-              context,
-              'Modifications des conditions',
-              'Nous nous réservons le droit de modifier ces conditions à tout moment. Les modifications entreront en vigueur dès leur publication dans l\'application. Votre utilisation continue de l\'application après ces modifications constitue votre acceptation des nouvelles conditions.',
-            ),
-
-            SizedBox(height: 20),
-            Center(
-              child: TextButton(
-                onPressed: () {
-                  // Logique pour télécharger la version PDF
-                },
-                child: Text(
-                  'Télécharger en PDF',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Conditions d\'utilisation',
                   style: TextStyle(
-                    color: KColors.secondary,
-                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
                   ),
                 ),
-              ),
+                const SizedBox(height: 4),
+                Text(
+                  'Dernière mise à jour : 12 mars 2025',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 12,
+                    color: Colors.white.withOpacity(0.65),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+
+          _Section(
+            title: '1. Introduction',
+            content:
+                'Bienvenue sur WorkStream. En accédant à et en utilisant notre application, vous acceptez d\'être lié par les présentes conditions d\'utilisation. Veuillez les lire attentivement avant d\'utiliser nos services.',
+          ),
+          _Section(
+            title: '2. Définitions',
+            content:
+                '"Application" désigne WorkStream et tous ses services associés. "Utilisateur" désigne toute personne accédant à l\'application. "Contenu" désigne toutes les informations, données et fichiers partagés via l\'application.',
+          ),
+          _Section(
+            title: '3. Conditions d\'utilisation',
+            content:
+                'Vous vous engagez à utiliser WorkStream uniquement à des fins légales et conformément aux présentes conditions. Il est interdit de partager du contenu illégal, offensant ou portant atteinte aux droits d\'autrui.',
+          ),
+          _Section(
+            title: '4. Propriété intellectuelle',
+            content:
+                'Tous les droits de propriété intellectuelle relatifs à WorkStream, y compris les marques, logos et code source, restent la propriété exclusive de l\'équipe WorkStream.',
+          ),
+          _Section(
+            title: '5. Limitation de responsabilité',
+            content:
+                'WorkStream est fourni "tel quel", sans garantie d\'aucune sorte. Nous ne saurions être tenus responsables des dommages indirects résultant de l\'utilisation ou de l\'impossibilité d\'utiliser l\'application.',
+          ),
+          _Section(
+            title: '6. Modifications',
+            content:
+                'Nous nous réservons le droit de modifier ces conditions à tout moment. Les modifications prennent effet dès leur publication. Votre utilisation continue de l\'application vaut acceptation des nouvelles conditions.',
+          ),
+
+          const SizedBox(height: 32),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildSection(BuildContext context, String title, String content) {
+class _Section extends StatelessWidget {
+  final String title;
+  final String content;
+  const _Section({required this.title, required this.content});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: KShadows.soft,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: KTypography.h5(context, color: KColors.primary),
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: KColors.dark,
+            ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             content,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-              height: 1.5,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              color: KColors.grey,
+              height: 1.6,
             ),
           ),
         ],

@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:management/Connexion/ecrans/inscrire/insc_item.dart';
-import 'package:management/Connexion/ecrans/welcomePage.dart';
-
-import '../../../commons/K_Input.dart';
-import '../../../commons/kelevated_button.dart';
-import '../../../commons/logo.dart';
 import '../../../theme/style.dart';
- // Assurez-vous que le chemin est correct
+import 'telephone.dart' show _AuthStepScaffold, _GradientButton;
+import '../welcomePage.dart';
 
 class PasswordDefine extends StatefulWidget {
   const PasswordDefine({super.key});
@@ -18,81 +13,157 @@ class PasswordDefine extends StatefulWidget {
 }
 
 class _PasswordDefineState extends State<PasswordDefine> {
-  PageController controller = PageController();
-  int selected = 0;
+  bool _obscure1 = true;
+  bool _obscure2 = true;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      extendBody: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-          ),
-        ],
-      ),
-      body: Stack(
+    return _AuthStepScaffold(
+      stepIndex: 4,
+      title: 'Mot de\npasse',
+      subtitle: 'Étape 5 sur 5 — Définissez votre mot de passe',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image de fond ou décoration
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [KColors.primary, KColors.secondary],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
+          const _AuthLabel('Choisir un mot de passe'),
+          const SizedBox(height: 8),
+          _PasswordField(
+            hint: 'Minimum 8 caractères',
+            obscure: _obscure1,
+            onToggle: () => setState(() => _obscure1 = !_obscure1),
           ),
-          Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Logo
-                    const Logo(
-                      size: 120.0, // Ajustez la taille selon vos besoins
-                      backgroundColor: Colors.white,
-                      borderColor: KColors.primary,
-                      borderWidth: 3.0,
-                    ),
-                    SizedBox(height: 40),
-                    // Titre
-                    Text(
-                      "Définition de votre mot de passe",
-                      style: KTypography.h4(context, color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    // Champs de saisie
-                    KInput(
-                      name: "Mot de passe",
-                      suffixIcon: Icon(Iconsax.password_check, color: KColors.primary),
-                    ),
-                    SizedBox(height: 10),
-                    KInput(
-                      name: "Confirmer",
-                      suffixIcon: Icon(Iconsax.password_check, color: KColors.primary),
-                    ),
-                    SizedBox(height: 20),
-                    // Bouton de continuation
-                    KElevatedButton(
-                      child: Text("Terminer"),
-                      onPressed: () => Get.to(Welcomepage()),
 
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          const SizedBox(height: 20),
+
+          const _AuthLabel('Confirmer le mot de passe'),
+          const SizedBox(height: 8),
+          _PasswordField(
+            hint: 'Répétez votre mot de passe',
+            obscure: _obscure2,
+            onToggle: () => setState(() => _obscure2 = !_obscure2),
+          ),
+
+          const SizedBox(height: 12),
+
+          // Indicateur force (décoratif)
+          _StrengthIndicator(),
+
+          const SizedBox(height: 28),
+          _GradientButton(
+            label: 'Créer mon compte',
+            onTap: () => Get.offAll(() => const Welcomepage()),
           ),
         ],
       ),
     );
   }
+}
+
+class _PasswordField extends StatelessWidget {
+  final String hint;
+  final bool obscure;
+  final VoidCallback onToggle;
+
+  const _PasswordField(
+      {required this.hint, required this.obscure, required this.onToggle});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      obscureText: obscure,
+      style: const TextStyle(
+        fontFamily: 'Poppins',
+        color: Colors.white,
+        fontSize: 14,
+      ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(
+          fontFamily: 'Poppins',
+          color: Colors.white.withOpacity(0.35),
+          fontSize: 14,
+        ),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.08),
+        prefixIcon: Icon(Iconsax.lock,
+            color: Colors.white.withOpacity(0.50), size: 20),
+        suffixIcon: GestureDetector(
+          onTap: onToggle,
+          child: Icon(
+            obscure ? Iconsax.eye_slash : Iconsax.eye,
+            color: Colors.white.withOpacity(0.50),
+            size: 20,
+          ),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: Colors.white.withOpacity(0.12), width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: Colors.white.withOpacity(0.12), width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide:
+              const BorderSide(color: KColors.secondary, width: 1.5),
+        ),
+      ),
+    );
+  }
+}
+
+class _StrengthIndicator extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: 0.6,
+                  backgroundColor: Colors.white.withOpacity(0.10),
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(KColors.warning),
+                  minHeight: 5,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'Moyen',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 11,
+                color: Colors.white.withOpacity(0.60),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _AuthLabel extends StatelessWidget {
+  final String text;
+  const _AuthLabel(this.text);
+  @override
+  Widget build(BuildContext context) => Text(
+        text,
+        style: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+      );
 }

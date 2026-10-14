@@ -1,159 +1,230 @@
 import 'package:flutter/material.dart';
-
+import 'package:iconsax/iconsax.dart';
 import '../../../theme/style.dart';
-
+import 'notif.dart' show _SectionTitle, _SettingsCard, _Divider;
 
 class PersonnaliserPage extends StatefulWidget {
+  const PersonnaliserPage({super.key});
+
   @override
-  _PersonnaliserPageState createState() => _PersonnaliserPageState();
+  State<PersonnaliserPage> createState() => _PersonnaliserPageState();
 }
 
 class _PersonnaliserPageState extends State<PersonnaliserPage> {
-  bool isDarkMode = false;
-  String selectedLanguage = 'Français';
-  double fontSize = 16.0;
+  bool _darkMode = false;
+  String _langue = 'Français';
+  double _fontSize = 14;
+
+  static const _langues = ['Français', 'English', 'Español', 'Deutsch'];
+  static const _themeColors = [
+    Color(0xFF2D6A8F),
+    Color(0xFF7C5CBF),
+    Color(0xFF00C9A7),
+    Color(0xFFFF4D6D),
+    Color(0xFFFFB84C),
+  ];
+  int _selectedColor = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Personnaliser', style: KTypography.h4(context)),
-        backgroundColor: KColors.primary,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Apparence',
-              style: KTypography.h5(context, color: KColors.secondary),
-            ),
-            SizedBox(height: 10),
-
-            // Mode sombre
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: KColors.primary.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+      backgroundColor: KColors.greyLight,
+      appBar: AppBar(title: const Text('Personnalisation')),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          // ── Apparence ─────────────────────────────────────────────────
+          _SectionTitle('Apparence'),
+          _SettingsCard(children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: KColors.dark.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Iconsax.moon, size: 20, color: KColors.dark),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Mode sombre',
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: KColors.dark)),
+                        Text('Thème foncé pour l\'interface',
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 11,
+                                color: KColors.grey)),
+                      ],
+                    ),
+                  ),
+                  Switch.adaptive(
+                    value: _darkMode,
+                    onChanged: (v) => setState(() => _darkMode = v),
+                    activeColor: KColors.primary,
                   ),
                 ],
               ),
-              child: SwitchListTile(
-                title: Text('Mode sombre', style: KTypography.h5(context)),
-                value: isDarkMode,
-                onChanged: (value) {
-                  setState(() {
-                    isDarkMode = value;
-                  });
-                },
-                activeColor: KColors.secondary,
-              ),
             ),
+          ]),
 
-            SizedBox(height: 20),
-            Text(
-              'Langue',
-              style: KTypography.h5(context, color: KColors.secondary),
+          // ── Couleur d'accentuation ────────────────────────────────────
+          _SectionTitle('Couleur d\'accentuation'),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: KShadows.soft,
             ),
-            SizedBox(height: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(_themeColors.length, (i) {
+                final selected = _selectedColor == i;
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedColor = i),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: _themeColors[i],
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: selected
+                            ? KColors.dark
+                            : Colors.transparent,
+                        width: 3,
+                      ),
+                      boxShadow: selected
+                          ? [
+                              BoxShadow(
+                                color: _themeColors[i].withOpacity(0.40),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ]
+                          : [],
+                    ),
+                    child: selected
+                        ? const Icon(Icons.check,
+                            color: Colors.white, size: 18)
+                        : null,
+                  ),
+                );
+              }),
+            ),
+          ),
 
-            // Sélection de langue
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: KColors.primary.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+          // ── Langue ────────────────────────────────────────────────────
+          _SectionTitle('Langue'),
+          _SettingsCard(children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: KColors.info.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Iconsax.global, size: 20, color: KColors.info),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Text('Langue',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: KColors.dark)),
+                  ),
+                  DropdownButton<String>(
+                    value: _langue,
+                    underline: const SizedBox(),
+                    icon: const Icon(Iconsax.arrow_down_2,
+                        size: 14, color: KColors.grey),
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 13,
+                      color: KColors.dark,
+                    ),
+                    onChanged: (v) => setState(() => _langue = v!),
+                    items: _langues
+                        .map((l) => DropdownMenuItem(value: l, child: Text(l)))
+                        .toList(),
                   ),
                 ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    isExpanded: true,
-                    value: selectedLanguage,
-                    items: ['Français', 'English', 'Español', 'Deutsch'].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value, style: KTypography.h5(context)),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedLanguage = newValue!;
-                      });
-                    },
-                  ),
-                ),
-              ),
             ),
+          ]),
 
-            SizedBox(height: 20),
-            Text(
-              'Taille du texte',
-              style: KTypography.h5(context, color: KColors.secondary),
+          // ── Taille du texte ───────────────────────────────────────────
+          _SectionTitle('Taille du texte'),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: KShadows.soft,
             ),
-            SizedBox(height: 10),
-
-            // Ajustement de la taille du texte
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: KColors.primary.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Text(
-                      'Exemple de texte',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.w500,
+                    const Text('A',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 12,
+                            color: KColors.grey)),
+                    Expanded(
+                      child: Slider(
+                        value: _fontSize,
+                        min: 12,
+                        max: 22,
+                        divisions: 5,
+                        activeColor: KColors.primary,
+                        inactiveColor: KColors.greyLight,
+                        onChanged: (v) => setState(() => _fontSize = v),
                       ),
                     ),
-                    Slider(
-                      value: fontSize,
-                      min: 12.0,
-                      max: 24.0,
-                      divisions: 6,
-                      activeColor: KColors.secondary,
-                      inactiveColor: KColors.primary.withOpacity(0.2),
-                      label: fontSize.round().toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          fontSize = value;
-                        });
-                      },
-                    ),
+                    const Text('A',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: KColors.dark)),
                   ],
                 ),
-              ),
+                Center(
+                  child: Text(
+                    'Aperçu: ${_fontSize.round()}px',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: _fontSize,
+                      color: KColors.dark,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+
+          const SizedBox(height: 32),
+        ],
       ),
     );
   }

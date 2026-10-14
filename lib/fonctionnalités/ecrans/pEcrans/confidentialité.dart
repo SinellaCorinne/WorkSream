@@ -1,214 +1,222 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../theme/style.dart';
-
+import 'notif.dart' show _SectionTitle, _SettingsCard, _Divider, _SwitchRow;
 
 class ConfidentialitePage extends StatefulWidget {
+  const ConfidentialitePage({super.key});
+
   @override
-  _ConfidentialitePageState createState() => _ConfidentialitePageState();
+  State<ConfidentialitePage> createState() => _ConfidentialitePageState();
 }
 
 class _ConfidentialitePageState extends State<ConfidentialitePage> {
-  bool partageLocalisation = true;
-  bool analyticsData = true;
-  bool publicitesCiblees = false;
+  bool _location = false;
+  bool _analytics = true;
+  bool _targetedAds = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Confidentialité', style: KTypography.h4(context)),
+      backgroundColor: KColors.greyLight,
+      appBar: AppBar(title: const Text('Confidentialité')),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          // Info banner
+          Container(
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(bottom: 4),
+            decoration: BoxDecoration(
+              color: KColors.info.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(16),
+              border:
+                  Border.all(color: KColors.info.withOpacity(0.20), width: 1),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Iconsax.shield_tick,
+                    color: KColors.info, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Vos données sont protégées et ne sont jamais partagées avec des tiers sans votre consentement explicite.',
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 12,
+                      color: KColors.info,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          _SectionTitle('Paramètres de confidentialité'),
+          _SettingsCard(children: [
+            _SwitchRow(
+              icon: Iconsax.location,
+              color: KColors.success,
+              title: 'Partage de localisation',
+              subtitle: 'Autoriser l\'accès à votre position',
+              value: _location,
+              onChanged: (v) => setState(() => _location = v),
+            ),
+            const _Divider(),
+            _SwitchRow(
+              icon: Iconsax.chart,
+              color: KColors.primary,
+              title: 'Données analytiques',
+              subtitle: 'Aider à améliorer l\'application',
+              value: _analytics,
+              onChanged: (v) => setState(() => _analytics = v),
+            ),
+            const _Divider(),
+            _SwitchRow(
+              icon: Iconsax.tag,
+              color: KColors.warning,
+              title: 'Publicités ciblées',
+              subtitle: 'Personnaliser les publicités',
+              value: _targetedAds,
+              onChanged: (v) => setState(() => _targetedAds = v),
+            ),
+          ]),
+
+          _SectionTitle('Actions sur les données'),
+          _SettingsCard(children: [
+            _ActionTile(
+              icon: Iconsax.document_download,
+              color: KColors.secondary,
+              title: 'Télécharger mes données',
+              subtitle: 'Exporter toutes vos informations',
+              onTap: () => _showSnack(context, 'Téléchargement en cours…'),
+            ),
+            const _Divider(),
+            _ActionTile(
+              icon: Iconsax.trash,
+              color: KColors.error,
+              title: 'Supprimer mon compte',
+              subtitle: 'Action irréversible',
+              onTap: () => _showDeleteDialog(context),
+              isDestructive: true,
+            ),
+          ]),
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  void _showSnack(BuildContext context, String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg,
+            style: const TextStyle(fontFamily: 'Poppins', fontSize: 13)),
         backgroundColor: KColors.primary,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Paramètres de confidentialité',
-              style: KTypography.h5(context, color: KColors.secondary),
-            ),
-            SizedBox(height: 10),
-
-            _buildSwitchTile(
-              'Partage de localisation',
-              'Permet de partager votre localisation pour améliorer les services',
-              partageLocalisation,
-                  (value) {
-                setState(() {
-                  partageLocalisation = value;
-                });
-              },
-            ),
-
-            SizedBox(height: 8),
-            _buildSwitchTile(
-              'Collecte de données d\'analyse',
-              'Aide à améliorer l\'application en partageant des données anonymes d\'utilisation',
-              analyticsData,
-                  (value) {
-                setState(() {
-                  analyticsData = value;
-                });
-              },
-            ),
-
-            SizedBox(height: 8),
-            _buildSwitchTile(
-              'Publicités ciblées',
-              'Permet d\'afficher des publicités personnalisées selon vos centres d\'intérêt',
-              publicitesCiblees,
-                  (value) {
-                setState(() {
-                  publicitesCiblees = value;
-                });
-              },
-            ),
-
-            SizedBox(height: 20),
-            Text(
-              'Gestion des données',
-              style: KTypography.h5(context, color: KColors.secondary),
-            ),
-            SizedBox(height: 10),
-
-            _buildActionTile(
-              'Télécharger mes données',
-              'Récupérez une copie de vos données personnelles',
-              Icons.download,
-                  () {
-                // Logique pour télécharger les données
-              },
-            ),
-
-            SizedBox(height: 8),
-            _buildActionTile(
-              'Supprimer mes données',
-              'Supprimez définitivement toutes vos données personnelles',
-              Icons.delete_outline,
-                  () {
-                _showDeleteConfirmation(context);
-              },
-              color: Colors.redAccent,
-            ),
-
-            SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: KColors.beige.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: KColors.primary.withOpacity(0.1)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Information',
-                    style: KTypography.h5(context, color: KColors.primary),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Nous nous engageons à protéger vos données personnelles. Pour plus d\'informations, consultez notre politique de confidentialité.',
-                    style: TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
 
-  Widget _buildSwitchTile(String title, String subtitle, bool value, Function(bool) onChanged) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: KColors.primary.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: SwitchListTile(
-        title: Text(title, style: KTypography.h5(context)),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.black54,
-          ),
-        ),
-        value: value,
-        onChanged: onChanged,
-        activeColor: KColors.secondary,
-      ),
-    );
-  }
-
-  Widget _buildActionTile(String title, String subtitle, IconData icon, VoidCallback onTap, {Color? color}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: KColors.primary.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: color ?? KColors.primary),
-        title: Text(title, style: KTypography.h5(context)),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.black54,
-          ),
-        ),
-        onTap: onTap,
-      ),
-    );
-  }
-
-  void _showDeleteConfirmation(BuildContext context) {
+  void _showDeleteDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Supprimer mes données ?'),
-          content: Text('Cette action est irréversible et effacera définitivement toutes vos données personnelles.'),
-          actions: [
-            TextButton(
-              child: Text('Annuler'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(
-                'Supprimer',
-                style: TextStyle(color: Colors.red),
-              ),
-              onPressed: () {
-                // Logique pour supprimer les données
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Supprimer le compte',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w700,
+                color: KColors.dark)),
+        content: const Text(
+          'Cette action est irréversible. Toutes vos données seront définitivement supprimées.',
+          style: TextStyle(
+              fontFamily: 'Poppins', fontSize: 13, color: KColors.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler',
+                style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: KColors.grey,
+                    fontWeight: FontWeight.w600)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Supprimer',
+                style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: KColors.error,
+                    fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
     );
   }
+}
+
+class _ActionTile extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final bool isDestructive;
+
+  const _ActionTile({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 20, color: color),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color:
+                                isDestructive ? KColors.error : KColors.dark)),
+                    Text(subtitle,
+                        style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 11,
+                            color: KColors.grey)),
+                  ],
+                ),
+              ),
+              Icon(Iconsax.arrow_right_3,
+                  size: 16, color: isDestructive ? KColors.error : KColors.grey),
+            ],
+          ),
+        ),
+      );
 }

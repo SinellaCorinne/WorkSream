@@ -1,264 +1,281 @@
 import 'package:flutter/material.dart';
-
+import 'package:iconsax/iconsax.dart';
 import '../../../theme/style.dart';
 
-
 class PagesAidePage extends StatefulWidget {
+  const PagesAidePage({super.key});
+
   @override
-  _PagesAidePageState createState() => _PagesAidePageState();
+  State<PagesAidePage> createState() => _PagesAidePageState();
 }
 
 class _PagesAidePageState extends State<PagesAidePage> {
-  // Liste des questions fréquentes
-  final List<Map<String, dynamic>> faqItems = [
-    {
-      'question': 'Comment modifier mon profil ?',
-      'response': 'Pour modifier votre profil, accédez à la page "Compte" via le menu principal, puis appuyez sur votre nom ou photo de profil. Vous pourrez y modifier vos informations personnelles.',
-      'isExpanded': false,
-    },
-    {
-      'question': 'Comment changer mon mot de passe ?',
-      'response': 'Pour changer votre mot de passe, allez dans "Paramètres" > "Confidentialité", puis sélectionnez "Mot de passe". Vous devrez saisir votre ancien mot de passe avant d\'en définir un nouveau.',
-      'isExpanded': false,
-    },
-    {
-      'question': 'Comment désactiver les notifications ?',
-      'response': 'Pour désactiver les notifications, accédez à "Paramètres" > "Notifications" et désactivez l\'option "Activer toutes les notifications", ou désactivez uniquement les types de notifications spécifiques que vous ne souhaitez pas recevoir.',
-      'isExpanded': false,
-    },
-    {
-      'question': 'Comment supprimer mon compte ?',
-      'response': 'Pour supprimer votre compte, allez dans "Paramètres" > "Confidentialité" > "Supprimer mes données". Attention, cette action est irréversible et toutes vos données seront définitivement supprimées.',
-      'isExpanded': false,
-    },
-    {
-      'question': 'Comment contacter le support technique ?',
-      'response': 'Vous pouvez contacter notre équipe de support technique en envoyant un email à support@example.com ou en utilisant le formulaire de contact disponible dans cette section.',
-      'isExpanded': false,
-    },
+  final List<bool> _expanded = List.filled(5, false);
+  final _subjectCtrl = TextEditingController();
+  final _messageCtrl = TextEditingController();
+
+  static const _faqs = [
+    (
+      q: 'Comment créer un nouveau projet ?',
+      a: 'Sur la page d\'accueil, faites défiler vers le bas pour voir la liste des projets. Appuyez sur "Voir tout" puis sur le bouton + pour ajouter un projet.',
+    ),
+    (
+      q: 'Comment ajouter des membres à mon équipe ?',
+      a: 'Allez dans l\'onglet "Messages", appuyez sur "Nouveau" puis sélectionnez des contacts. Vous pouvez créer un groupe en sélectionnant plusieurs membres.',
+    ),
+    (
+      q: 'Comment marquer une tâche comme terminée ?',
+      a: 'Dans l\'onglet "Tâches", développez un projet en appuyant dessus, puis cochez les tâches que vous avez terminées.',
+    ),
+    (
+      q: 'Comment modifier mon profil ?',
+      a: 'Allez dans l\'onglet "Profil", appuyez sur l\'icône de modification à côté de votre photo. Vous pouvez changer votre nom et votre photo.',
+    ),
+    (
+      q: 'Comment réinitialiser mon mot de passe ?',
+      a: 'Sur la page de connexion, appuyez sur "Mot de passe oublié ?" et suivez les instructions pour réinitialiser votre mot de passe.',
+    ),
   ];
+
+  @override
+  void dispose() {
+    _subjectCtrl.dispose();
+    _messageCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pages d\'aide', style: KTypography.h4(context)),
-        backgroundColor: KColors.primary,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Bannière d'aide
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: KColors.primary,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Besoin d\'aide ?',
-                    style: KTypography.h4(context, color: Colors.white),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Consultez nos guides ou contactez notre support.',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 14,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      _showContactForm(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: KColors.primary,
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    ),
-                    child: Text('Contacter le support'),
-                  ),
-                ],
-              ),
+      backgroundColor: KColors.greyLight,
+      appBar: AppBar(title: const Text('Aide & Support')),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          // Support card
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: KGradients.primaryGradient,
+              borderRadius: BorderRadius.circular(20),
             ),
-
-            SizedBox(height: 20),
-            Text(
-              'Questions fréquentes',
-              style: KTypography.h5(context, color: KColors.secondary),
-            ),
-            SizedBox(height: 10),
-
-            // Liste des FAQ
-            ExpansionPanelList(
-              elevation: 1,
-              expandedHeaderPadding: EdgeInsets.zero,
-              expansionCallback: (int index, bool isExpanded) {
-                setState(() {
-                  faqItems[index]['isExpanded'] = !isExpanded;
-                });
-              },
-              children: faqItems.map<ExpansionPanel>((Map<String, dynamic> item) {
-                return ExpansionPanel(
-                  headerBuilder: (BuildContext context, bool isExpanded) {
-                    return ListTile(
-                      title: Text(
-                        item['question'],
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: KColors.primary,
-                        ),
-                      ),
-                    );
-                  },
-                  body: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        item['response'],
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
-                  isExpanded: item['isExpanded'],
-                );
-              }).toList(),
-            ),
-
-            SizedBox(height: 20),
-            Text(
-              'Guides et tutoriels',
-              style: KTypography.h5(context, color: KColors.secondary),
-            ),
-            SizedBox(height: 10),
-
-            // Guides
-            _buildGuideTile(
-              'Guide de démarrage',
-              'Apprenez les bases pour bien démarrer',
-              Icons.play_circle_outline,
-                  () {
-                // Navigation vers le guide de démarrage
-              },
-            ),
-
-            SizedBox(height: 8),
-            _buildGuideTile(
-              'Fonctionnalités avancées',
-              'Découvrez toutes les fonctionnalités avancées',
-              Icons.star_outline,
-                  () {
-                // Navigation vers les fonctionnalités avancées
-              },
-            ),
-
-            SizedBox(height: 8),
-            _buildGuideTile(
-              'Résolution des problèmes',
-              'Solutions aux problèmes courants',
-              Icons.build_outlined,
-                  () {
-                // Navigation vers la résolution des problèmes
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGuideTile(String title, String subtitle, IconData icon, VoidCallback onTap) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: KColors.primary.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: KColors.secondary),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: onTap,
-      ),
-    );
-  }
-
-  void _showContactForm(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Contacter le support'),
-          content: Container(
-            width: double.maxFinite,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Sujet',
-                    border: OutlineInputBorder(),
+                const Icon(Iconsax.headphone, color: Colors.white, size: 28),
+                const SizedBox(height: 12),
+                const Text(
+                  'Besoin d\'aide ?',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Message',
-                    border: OutlineInputBorder(),
+                const SizedBox(height: 6),
+                Text(
+                  'Notre équipe est disponible 24h/7j pour vous aider.',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 13,
+                    color: Colors.white.withOpacity(0.75),
                   ),
-                  maxLines: 5,
+                ),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () => _showContactDialog(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'Contacter le support',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: KColors.primary,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              child: Text('Annuler'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+
+          const SizedBox(height: 24),
+
+          // FAQ
+          const Text(
+            'QUESTIONS FRÉQUENTES',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: KColors.grey,
+              letterSpacing: 1.2,
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: KColors.secondary,
+          ),
+          const SizedBox(height: 12),
+
+          ...List.generate(_faqs.length, (i) {
+            final faq = _faqs[i];
+            return Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: KShadows.soft,
               ),
-              child: Text('Envoyer'),
-              onPressed: () {
-                // Logique d'envoi du message
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Message envoyé avec succès !'),
-                    backgroundColor: KColors.secondary,
+              child: InkWell(
+                onTap: () => setState(() => _expanded[i] = !_expanded[i]),
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              faq.q,
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: KColors.dark,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          AnimatedRotation(
+                            duration: const Duration(milliseconds: 200),
+                            turns: _expanded[i] ? 0.5 : 0,
+                            child: const Icon(Iconsax.arrow_down_2,
+                                size: 16, color: KColors.grey),
+                          ),
+                        ],
+                      ),
+                      if (_expanded[i]) ...[
+                        const SizedBox(height: 10),
+                        const Divider(color: Color(0xFFEFF2F7), height: 1),
+                        const SizedBox(height: 10),
+                        Text(
+                          faq.a,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 13,
+                            color: KColors.grey,
+                            height: 1.6,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
-                );
-              },
+                ),
+              ),
+            );
+          }),
+
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  void _showContactDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Poignée
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: KColors.greyLight,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Contacter le support',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: KColors.dark,
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _subjectCtrl,
+              style: const TextStyle(
+                  fontFamily: 'Poppins', fontSize: 14, color: KColors.dark),
+              decoration: const InputDecoration(
+                labelText: 'Sujet',
+                prefixIcon: Icon(Iconsax.tag, size: 18, color: KColors.grey),
+              ),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _messageCtrl,
+              maxLines: 4,
+              style: const TextStyle(
+                  fontFamily: 'Poppins', fontSize: 14, color: KColors.dark),
+              decoration: const InputDecoration(
+                labelText: 'Message',
+                alignLabelWithHint: true,
+                prefixIcon:
+                    Icon(Iconsax.message_text, size: 18, color: KColors.grey),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Message envoyé ! Nous vous répondrons sous 24h.',
+                          style: TextStyle(fontFamily: 'Poppins', fontSize: 13)),
+                      backgroundColor: KColors.success,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                  );
+                },
+                child: const Text('Envoyer'),
+              ),
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }
